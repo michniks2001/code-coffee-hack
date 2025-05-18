@@ -45,11 +45,27 @@ def list_secrets():
         for key in vault:
             print(f" - {key}")
 
-def import_to_env(secret_name):
+def import_to_env(*secret_names):
     vault = load_vault()
-    if secret_name in vault:
-        with open(".env", "a") as f:
-            f.write(f"{secret_name}={vault[secret_name]}\n")
-        print(f"[+] Imported {secret_name} to .env")
-    else:
-        print("[!] Secret not found")
+    
+    # If no arguments provided, import all secrets
+    if not secret_names:
+        if not vault:
+            print("[!] No secrets found in vault")
+            return
+        
+        secret_names = list(vault.keys())
+        print(f"Importing all {len(secret_names)} secrets")
+    
+    imported_count = 0
+    with open(".env", "a") as f:
+        for secret_name in secret_names:
+            if secret_name in vault:
+                f.write(f"{secret_name}={vault[secret_name]}\n")
+                print(f"[+] Imported {secret_name} to .env")
+                imported_count += 1
+            else:
+                print(f"[!] Secret not found: {secret_name}")
+    
+    if imported_count > 0:
+        print(f"[*] Successfully imported {imported_count} secret(s) to .env")

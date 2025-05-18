@@ -28,7 +28,7 @@ def main():
     upd_cmd.add_argument("value")
 
     imp_cmd = subparsers.add_parser("import")
-    imp_cmd.add_argument("name")
+    imp_cmd.add_argument("names", nargs="*", help="Secret names to import (if none specified, all secrets will be imported)")
 
     args = parser.parse_args()
 
@@ -39,7 +39,7 @@ def main():
     elif args.command == "update":
         commands.update(args.name, args.value)
     elif args.command == "import":
-        commands.import_to_env(args.name)
+        commands.import_to_env(*args.names)
     elif args.command == "list":
         commands.list_secrets()
     else:
