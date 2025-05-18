@@ -1,1 +1,9 @@
-cryptography
+beautifulsoup4==4.13.4
+cffi==1.17.1
+cryptography==45.0.2
+Encryption==0.0.1
+google==3.0.0
+pycparser==2.22
+python-dotenv==1.1.0
+soupsieve==2.7
+typing_extensions==4.13.2

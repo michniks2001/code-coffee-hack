@@ -1,6 +1,12 @@
-
 import os
 import sys
+
+from google import genai
+from dotenv import load_dotenv
+
+load_dotenv()
+
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 # Ensure the package can be imported regardless of how it's run
 try:
@@ -111,6 +117,12 @@ def _add_from_file(file_path, vault):
     print("[*] Future versions will support intelligent parsing with LLMs.")
     
     # TODO: Implement LLM parsing for more complex formats
+    response = client.models.generate_content(
+        model="gemini-2.0-flash",
+        contents=[
+            
+        ]
+    )
 
 def delete(secret_name):
     vault = load_vault()
