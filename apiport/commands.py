@@ -100,9 +100,9 @@ def _add_from_file(file_path, vault):
                 safety_settings=safety_settings
             )
             
-            prompt = f"""You are an expert at parsing environment variables from text files.
-            The user may provide a text file where there could be unnecessary text and comments. Extract only the key-value pairs from the file.
-            Extract all key-value pairs from the following text and return them in the format KEY=VALUE, where the key is in all caps and snake_case, one per line:
+            prompt = f"""You are an expert at parsing API Keys from text files.
+            Here is some text that contains API_KEYS. There could be some unnecessary information and comments (like email ids, or wrong api key names, incorrect format, todo list etc). Ignore the unnecessary information and extract only the API KEYs.
+            Return the API_KEYS in the form KEY=VALUE, where the key is in all caps and snake_case, one per line. Make sure that the API KEY variable names is in the correct format according to the api companies guidelines. So, if you see [OPEN AIs api is sk34t-sag..., give back OPENAI_API_KEY=sk34t-sag...].
             
             {content}
             """
