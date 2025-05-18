@@ -1,5 +1,14 @@
 import argparse
-from . import commands
+import sys
+import os
+
+# Import from the apiport module which provides a consistent interface
+# regardless of the folder name
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
+import apiport
+
+# Use the commands module from the apiport module
+commands = apiport.commands
 
 def main():
     parser = argparse.ArgumentParser(prog="apiport", description="CLI tool for managing API secrets")

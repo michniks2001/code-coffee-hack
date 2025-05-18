@@ -1,6 +1,16 @@
 
-from .storage import load_vault, save_vault
 import os
+import sys
+
+# Ensure the package can be imported regardless of how it's run
+try:
+    from .storage import load_vault, save_vault
+except ImportError:
+    # If running as script or the package is not installed
+    package_dir = os.path.abspath(os.path.dirname(__file__))
+    if package_dir not in sys.path:
+        sys.path.insert(0, package_dir)
+    from storage import load_vault, save_vault
 
 def add(secret_name, secret_value):
     vault = load_vault()
