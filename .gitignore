@@ -4,3 +4,4 @@ __pycache__/
 example.txt
 apiport.egg-info/
 build/
+dist/

@@ -106,6 +106,7 @@ def _add_from_file(file_path, vault):
             )
             
             prompt = f"""You are an expert at parsing environment variables from text files.
+            The user may provide a text file where there could be unnecessary text and comments. Extract only the key-value pairs from the file.
             Extract all key-value pairs from the following text and return them in the format KEY=VALUE, where the key is in all caps, one per line:
             
             {content}
