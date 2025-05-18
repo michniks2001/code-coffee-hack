@@ -1,3 +1,6 @@
+"""
+Commands module for the apiport CLI tool.
+"""
 import os
 import sys
 
@@ -15,15 +18,7 @@ except ImportError:
     print("[!] Google AI libraries not found. LLM-based parsing will be disabled.")
     print("[!] To enable LLM features, install required packages: pip install google-generativeai python-dotenv")
 
-# Ensure the package can be imported regardless of how it's run
-try:
-    from .storage import load_vault, save_vault
-except ImportError:
-    # If running as script or the package is not installed
-    package_dir = os.path.abspath(os.path.dirname(__file__))
-    if package_dir not in sys.path:
-        sys.path.insert(0, package_dir)
-    from storage import load_vault, save_vault
+from .storage import load_vault, save_vault
 
 def add(secret_name, secret_value=None, path_to_file=None):
     """Add secrets to the vault.

@@ -13,7 +13,8 @@ def main():
     parser = argparse.ArgumentParser(prog="apiport", description="CLI tool for managing API secrets")
     subparsers = parser.add_subparsers(dest="command")
 
-    subparsers.add_parser("list")
+    list_cmd = subparsers.add_parser("list", description="List all secrets in the vault")
+    list_cmd.add_argument("--debug", "-d", action="store_true", help="Show secret values in addition to names")
 
     add_cmd = subparsers.add_parser("add", help="Add secrets to the vault", description="Add secrets to the vault")
     add_cmd_group = add_cmd.add_mutually_exclusive_group(required=True)
