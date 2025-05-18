@@ -16,9 +16,11 @@ def main():
 
     subparsers.add_parser("list")
 
-    add_cmd = subparsers.add_parser("add")
-    add_cmd.add_argument("name")
-    add_cmd.add_argument("value")
+    add_cmd = subparsers.add_parser("add", description="Add secrets to the vault")
+    add_cmd_group = add_cmd.add_mutually_exclusive_group(required=True)
+    add_cmd_group.add_argument("--file", "-f", dest="path_to_file", help="Path to a file containing secrets")
+    add_cmd_group.add_argument("--key-value", "-k", dest="key_values", nargs="+", help="One or more KEY=VALUE pairs")
+    add_cmd_group.add_argument("--name-value", "-n", nargs=2, dest="name_value", metavar=("NAME", "VALUE"), help="Secret name and value as separate arguments")
 
     del_cmd = subparsers.add_parser("delete")
     del_cmd.add_argument("name")
@@ -33,7 +35,18 @@ def main():
     args = parser.parse_args()
 
     if args.command == "add":
-        commands.add(args.name, args.value)
+        if args.path_to_file:
+            commands.add(None, None, args.path_to_file)
+        elif args.key_values:
+            if len(args.key_values) == 1 and "=" in args.key_values[0]:
+                # Single KEY=VALUE pair
+                commands.add(args.key_values[0])
+            else:
+                # Multiple KEY=VALUE pairs
+                commands.add(args.key_values)
+        elif args.name_value:
+            # Name and value as separate arguments
+            commands.add(args.name_value[0], args.name_value[1])
     elif args.command == "delete":
         commands.delete(args.name)
     elif args.command == "update":

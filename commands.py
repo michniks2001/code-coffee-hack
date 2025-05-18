@@ -12,11 +12,105 @@ except ImportError:
         sys.path.insert(0, package_dir)
     from storage import load_vault, save_vault
 
-def add(secret_name, secret_value):
+def add(secret_name, secret_value=None, path_to_file=None):
+    """Add secrets to the vault.
+    
+    Args:
+        secret_name: Either a single secret name or a key=value string or a list of key=value strings
+        secret_value: The value for the secret (if secret_name is just a name)
+        path_to_file: Optional path to a file containing secrets
+    """
     vault = load_vault()
-    vault[secret_name] = secret_value
-    save_vault(vault)
-    print(f"[+] Added secret: {secret_name}")
+    
+    # Case 1: File path provided
+    if path_to_file and os.path.exists(path_to_file):
+        _add_from_file(path_to_file, vault)
+        return
+    
+    # Case 2: Single key-value pair with separate arguments
+    if secret_value is not None:
+        vault[secret_name] = secret_value
+        save_vault(vault)
+        print(f"[+] Added secret: {secret_name}")
+        return
+    
+    # Case 3: Key=value format in secret_name
+    if isinstance(secret_name, str) and "=" in secret_name:
+        key, value = secret_name.split("=", 1)
+        vault[key] = value
+        save_vault(vault)
+        print(f"[+] Added secret: {key}")
+        return
+    
+    # Case 4: List of key=value pairs
+    if isinstance(secret_name, list):
+        for item in secret_name:
+            if "=" in item:
+                key, value = item.split("=", 1)
+                vault[key] = value
+                print(f"[+] Added secret: {key}")
+            else:
+                print(f"[!] Invalid format for {item}. Use KEY=value format.")
+        save_vault(vault)
+        return
+    
+    # Invalid input
+    print("[!] Invalid input format. Use 'add KEY VALUE' or 'add KEY=VALUE' or provide a file path.")
+
+def _add_from_file(file_path, vault):
+    """Parse and add secrets from a file.
+    
+    This function attempts to intelligently parse different file formats.
+    """
+    with open(file_path, 'r') as f:
+        content = f.read()
+    
+    # Try to parse as .env format first (most common)
+    secrets_added = 0
+    
+    # Split by lines and process each line
+    for line in content.splitlines():
+        line = line.strip()
+        
+        # Skip empty lines and comments
+        if not line or line.startswith('#'):
+            continue
+        
+        # Try to extract key-value pairs
+        if '=' in line:
+            # Handle KEY=VALUE format
+            key, value = line.split('=', 1)
+            key = key.strip()
+            value = value.strip().strip('"\'')
+            
+            if key:
+                vault[key] = value
+                secrets_added += 1
+                print(f"[+] Added secret: {key}")
+        elif ':' in line:
+            # Handle KEY: VALUE format
+            key, value = line.split(':', 1)
+            key = key.strip()
+            value = value.strip().strip('"\'')
+            
+            if key:
+                vault[key] = value
+                secrets_added += 1
+                print(f"[+] Added secret: {key}")
+    
+    # If we found secrets, save and return
+    if secrets_added > 0:
+        save_vault(vault)
+        print(f"[*] Added {secrets_added} secrets from {file_path}")
+        return
+    
+    # If no secrets were found with simple parsing, we could use an LLM here
+    # For now, just inform the user
+    print("[!] Could not parse secrets from the file. Please ensure it's in a supported format.")
+    print("[*] Supported formats: KEY=VALUE or KEY: VALUE (one per line)")
+    print("[*] Future versions will support intelligent parsing with LLMs.")
+    
+    # TODO: Implement LLM parsing for more complex formats
 
 def delete(secret_name):
     vault = load_vault()
