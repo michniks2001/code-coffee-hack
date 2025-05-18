@@ -50,7 +50,71 @@ Run 'apiport help [command]' for more information on a command.
 """)
             sys.exit(0)
         elif len(sys.argv) >= 3 and sys.argv[2] in subparsers.choices:
-            subparsers.choices[sys.argv[2]].print_help()
+            command = sys.argv[2]
+            if command == "add":
+                print("""
+Command: add
+Description: Add secrets to the vault
+
+Usage:
+  apiport add --file|-f PATH_TO_FILE          Add secrets from a file
+  apiport add --key-value|-k KEY=VALUE        Add one or more secrets using KEY=VALUE format
+  apiport add --name-value|-n NAME VALUE      Add a secret using separate name and value arguments
+
+Examples:
+  apiport add -f .env                          Import secrets from .env file
+  apiport add -k API_KEY=secret123             Add a single secret
+  apiport add -k API_KEY=secret123 DB_URL=...  Add multiple secrets
+  apiport add -n API_KEY secret123             Add a single secret with separate arguments
+""")
+            elif command == "delete":
+                print("""
+Command: delete
+Description: Delete a secret from the vault
+
+Usage:
+  apiport delete SECRET_NAME     Delete the specified secret
+
+Example:
+  apiport delete API_KEY         Delete the API_KEY secret
+""")
+            elif command == "update":
+                print("""
+Command: update
+Description: Update the value of an existing secret
+
+Usage:
+  apiport update SECRET_NAME NEW_VALUE     Update the value of an existing secret
+
+Example:
+  apiport update API_KEY newsecretvalue    Update the API_KEY with a new value
+""")
+            elif command == "import":
+                print("""
+Command: import
+Description: Import secrets from the vault into a .env file
+
+Usage:
+  apiport import                    Import all secrets to .env file
+  apiport import SECRET1 SECRET2    Import specific secrets to .env file
+
+Examples:
+  apiport import                    Import all secrets from vault to .env
+  apiport import API_KEY DB_URL     Import only API_KEY and DB_URL to .env
+""")
+            elif command == "list":
+                print("""
+Command: list
+Description: List all secrets stored in the vault
+
+Usage:
+  apiport list     Display all secret names (without values)
+
+Example:
+  apiport list     Show all stored secret names
+""")
+            else:
+                subparsers.choices[sys.argv[2]].print_help()
             sys.exit(0)
         else:
             print(f"Unknown command '{sys.argv[2]}'. Run 'apiport help' to see available commands.")
